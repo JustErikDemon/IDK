@@ -1,32 +1,6 @@
-<html lang="en" class=""><head>
-
-  <meta charset="UTF-8">
-  <title>CodePen Demo</title>
-
-  <meta name="robots" content="noindex">
-
-  <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
-  <link rel="mask-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111">
-  <link rel="canonical" href="https://codepen.io/pen/">
-
-  
-  
-
-  <style id="INLINE_PEN_STYLESHEET_ID">
-    
-  </style>
-
-  
-<script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
-<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeConsoleRunner-6d8bf8b4b479137260842506acbb12717dace0823c023e08b96360e60b0840d9.js"></script>
-<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRefreshCSS-44fe83e49b63affec96918c9af88c0d80b209a862cf87ac46bc933074b8c557d.js"></script>
-<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRuntimeErrors-4f205f2c14e769b448bcf477de2938c681660d5038bc464e3700256713ebe261.js"></script>
-</head>
-
-<body>
-  
-
-
+<<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Points Conversion Menu</title>
@@ -100,16 +74,16 @@
             background-color: #0056b3;
         }
     </style>
-
-
+</head>
+<body>
 
     <h1>JustErikDemon Games</h1>
-    <h2>Global Points Conversion</h2>
+    <h2> Points Conversion</h2>
 
     <div class="menu-container">
         <!-- Display user's global points -->
         <div class="points-display">
-            <strong>Your Global Points: <span id="globalPoints">220</span></strong>
+            <strong>Your Points: <span id="globalPoints">0</span></strong>
         </div>
 
         <!-- Button to convert points -->
@@ -130,23 +104,23 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const globalPoints = document.getElementById("globalPoints"); // Global points display
+            const globalPointsDisplay = document.getElementById("globalPoints"); // Global points display
             const convertPointsBtn = document.getElementById("convertPointsBtn"); // Button to open modal
             const conversionModal = document.getElementById("conversionModal"); // Modal element
             const submitConversion = document.getElementById("submitConversion"); // Submit button in modal
             const rblxUserInput = document.getElementById("rblxUser"); // Roblox username input
             const pointsAmountInput = document.getElementById("pointsAmount"); // Points amount input
 
-            // Points saved in localStorage (for simulation)
-            let points = parseInt(localStorage.getItem("globalPoints")) || 1000;
-            globalPoints.innerText = points;
+            // Load points from localStorage (used by both the game and this menu)
+            let points = parseInt(localStorage.getItem("points")) || 0;
+            globalPointsDisplay.innerText = points;
 
             // Show the modal when 'Convert Points' button is clicked
             convertPointsBtn.addEventListener("click", () => {
                 conversionModal.style.display = "block";
             });
 
-            // Send webhook when the form is submitted
+            // Handle points conversion and webhook call
             submitConversion.addEventListener("click", () => {
                 const rblxUser = rblxUserInput.value.trim();
                 const pointsToConvert = parseInt(pointsAmountInput.value);
@@ -156,21 +130,21 @@
                     return;
                 }
 
-                // Check if user has enough points
+                // Check if user has enough points to convert
                 if (pointsToConvert > points) {
                     alert("Not enough points to convert!");
                     return;
                 }
 
-                // Subtract points from the global points
+                // Deduct points and update localStorage
                 points -= pointsToConvert;
-                localStorage.setItem("globalPoints", points);
-                globalPoints.innerText = points;
+                localStorage.setItem("points", points); // Save updated points in localStorage
+                globalPointsDisplay.innerText = points; // Update displayed points
 
-                // Webhook URL (replace with your actual webhook)
+                // Webhook URL (replace with your actual webhook URL)
                 const webhookUrl = 'https://your-webhook-url-here.com';
 
-                // Prepare the webhook data
+                // Prepare webhook data
                 const webhookData = {
                     content: `${rblxUser} redeemed ${pointsToConvert} points from JustErikDemon Games to JustErikDemon Rewards!`
                 };
@@ -196,11 +170,6 @@
         });
     </script>
 
+</body>
+</html>
 
-
-
-  
-  
-
-
-</body></html>
