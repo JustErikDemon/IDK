@@ -1,0 +1,406 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  
+
+    <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png">
+
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+
+    <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111">
+
+
+
+  
+    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+
+
+  <title>CodePen - NICE GLOBAL</title>
+
+    <link rel="canonical" href="https://codepen.io/T-th-Peter/pen/KKOqVQW">
+  
+  
+  
+  
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.grid-item {
+    padding: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+</style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+</head>
+
+<body translate="no">
+  
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mines Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 20px; /* Add padding to the body */
+        }
+        h1 {
+            text-align: center; /* Center the title */
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px; /* Increase gap between buttons */
+            margin-bottom: 20px;
+        }
+        .grid-item {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            border: 1px solid #007bff; /* Add border to grid items */
+            border-radius: 5px; /* Round the corners */
+            background-color: #1e1e1e; /* Darker background for buttons */
+            cursor: not-allowed; /* Indicate buttons are not clickable */
+        }
+        .grid-item.active {
+            cursor: pointer; /* Change cursor to pointer when active */
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%; /* Make buttons full width */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between; /* Space between controls */
+            margin-bottom: 20px; /* Add space below controls */
+        }
+        #message {
+            margin-top: 10px;
+            text-align: center; /* Center the message */
+        }
+        /* New CSS for right positioning */
+        .right-position {
+            margin-left: 14px; /* Adjust margin to move it to the right */
+        }
+    </style>
+
+
+    <h1>Mines Game</h1>
+    <div>
+        <strong>Your Points: <span id="pointsValue">923</span></strong>
+    </div>
+    <div class="controls">
+        <div>
+            <label for="betAmount">Bet Amount:</label>
+            <input type="number" id="betAmount" value="30" min="1">
+        </div>
+        <label for="bombsCount" class="right-position">Mines:</label> <!-- Add right-position class -->
+        <select id="bombsCount">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+        </select>
+    </div>
+    <div class="controls">
+        <button id="startButton">Start New Game</button>
+        <button id="depositButton" style="display:none;">Deposit</button>
+    </div>
+    <div id="grid"></div>
+    <div id="message"></div>
+    <div>
+        <strong>Total Earnings: <span id="totalEarnings">0</span></strong>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const grid = document.getElementById("grid");
+            const startButton = document.getElementById("startButton");
+            const message = document.getElementById("message");
+            const depositButton = document.getElementById("depositButton");
+            const betAmountInput = document.getElementById("betAmount");
+            const pointsValue = document.getElementById("pointsValue");
+            const totalEarningsDisplay = document.getElementById("totalEarnings");
+            const bombsCountSelect = document.getElementById("bombsCount");
+
+            let bombsCount = 0; // To keep track of bombs selected
+            let gameStarted = false; // To track the game state
+            let points = parseInt(localStorage.getItem("points")) || 1000; // Load points or start with 1000
+            let totalEarnings = 0; // To keep track of total earnings
+            let riskAmount = 0; // To keep track of the risk amount
+
+            // Update the points display
+            function updatePointsDisplay() {
+                pointsValue.innerText = points;
+                localStorage.setItem("points", points); // Save points in local storage
+            }
+
+            // Function to generate the grid and set bombs
+            function generateGrid() {
+                grid.innerHTML = ""; // Clear the grid
+                const bombPositions = new Set();
+
+                // Randomly determine bomb positions
+                while (bombPositions.size < bombsCount) {
+                    bombPositions.add(Math.floor(Math.random() * 12));
+                }
+
+                for (let i = 0; i < 12; i++) {
+                    const button = document.createElement("button");
+                    button.classList.add("grid-item", "active"); // Add active class
+                    button.innerText = "?"; // Initial text
+                    button.addEventListener("click", () => handleButtonClick(button, bombPositions.has(i)));
+                    grid.appendChild(button);
+                }
+            }
+
+            // Handle button click
+            function handleButtonClick(button, isBomb) {
+                if (!gameStarted) return; // If the game hasn't started, ignore clicks
+
+                button.innerText = isBomb ? "💣" : "✅"; // Show bomb or safe
+                button.disabled = true; // Disable button after click
+                button.classList.remove('active'); // Remove active class
+
+                if (isBomb) {
+                    message.innerText = "Game Over! You hit a bomb!";
+                    gameStarted = false; // End the game
+                    depositButton.style.display = "none"; // Hide deposit button
+                    startButton.style.display = "block"; // Show start button
+                    disableGridButtons(); // Disable grid buttons
+                } else {
+                    totalEarnings += parseInt(betAmountInput.value);
+                    message.innerText = `Safe choice! Total Earnings: ${totalEarnings}`;
+                }
+            }
+
+            // Function to handle deposit
+            depositButton.addEventListener("click", () => {
+                if (totalEarnings > 0) {
+                    points += totalEarnings; // Add earnings to points
+                    updatePointsDisplay(); // Update points display
+                    message.innerText = `You deposited ${totalEarnings} points!`;
+                    totalEarnings = 0; // Reset total earnings
+                    totalEarningsDisplay.innerText = totalEarnings; // Update display
+                    depositButton.style.display = "none"; // Hide deposit button
+                    startButton.style.display = "block"; // Show start button
+                    disableGridButtons(); // Disable grid buttons
+                } else {
+                    message.innerText = "You have no earnings to deposit!";
+                }
+            });
+
+            // Function to disable all grid buttons
+            function disableGridButtons() {
+                const gridItems = document.querySelectorAll('.grid-item');
+                gridItems.forEach(item => {
+                    item.disabled = true; // Disable all buttons in the grid
+                    item.classList.remove('active'); // Remove active class
+                });
+            }
+
+            // Start a new game
+            startButton.addEventListener("click", () => {
+                riskAmount = parseInt(betAmountInput.value); // Get the risk amount
+                if (points < riskAmount) {
+                    message.innerText = "Not enough points to start the game!";
+                    return;
+                }
+                points -= riskAmount; // Deduct points for starting the game
+                updatePointsDisplay(); // Update points display
+                bombsCount = parseInt(bombsCountSelect.value); // Get bombs count
+                totalEarnings = riskAmount; // Set initial earnings to risk amount
+                message.innerText = ""; // Clear message
+                gameStarted = true; // Start the game
+                generateGrid(); // Generate grid with bombs
+                depositButton.style.display = "block"; // Show deposit button
+                startButton.style.display = "none"; // Hide start button
+            });
+
+            // Initialize points display on page load
+            updatePointsDisplay();
+        });
+    </script>
+
+
+  
+      <script id="rendered-js">
+document.addEventListener("DOMContentLoaded", () => {
+  const grid = document.getElementById("grid");
+  const startButton = document.getElementById("startButton");
+  const message = document.getElementById("message");
+  const depositButton = document.getElementById("depositButton");
+  const betAmountInput = document.getElementById("betAmount");
+  const pointsValue = document.getElementById("pointsValue");
+  const totalEarningsDisplay = document.getElementById("totalEarnings");
+  const bombsCountSelect = document.getElementById("bombsCount");
+
+  let bombsCount = 0; // To keep track of bombs selected
+  let gameStarted = false; // To track the game state
+  let points = parseInt(localStorage.getItem("points")) || 1000; // Load points or start with 1000
+  let totalEarnings = 0; // To keep track of total earnings
+
+  // Update the points display
+  function updatePointsDisplay() {
+    pointsValue.innerText = points;
+    localStorage.setItem("points", points); // Save points in local storage
+  }
+
+  // Function to generate the grid and set bombs
+  function generateGrid() {
+    grid.innerHTML = ""; // Clear the grid
+    const bombPositions = new Set();
+
+    // Randomly determine bomb positions
+    while (bombPositions.size < bombsCount) {if (window.CP.shouldStopExecution(0)) break;
+      bombPositions.add(Math.floor(Math.random() * 12));
+    }window.CP.exitedLoop(0);
+
+    for (let i = 0; i < 12; i++) {if (window.CP.shouldStopExecution(1)) break;
+      const button = document.createElement("button");
+      button.classList.add("grid-item");
+      button.innerText = "?"; // Initial text
+      button.addEventListener("click", () => handleButtonClick(button, bombPositions.has(i)));
+      grid.appendChild(button);
+    }window.CP.exitedLoop(1);
+  }
+
+  // Handle button click
+  function handleButtonClick(button, isBomb) {
+    if (!gameStarted) return; // If the game hasn't started, ignore clicks
+
+    button.innerText = isBomb ? "💣" : "✅"; // Show bomb or safe
+    button.disabled = true; // Disable button after click
+
+    if (isBomb) {
+      message.innerText = "Game Over! You hit a bomb!";
+      gameStarted = false; // End the game
+      depositButton.style.display = "none"; // Hide deposit button
+      startButton.style.display = "block"; // Show start button again
+      totalEarningsDisplay.innerText = 0; // Reset total earnings
+      updatePointsDisplay(); // Update points display after losing
+    } else {
+      message.innerText = "Nice! Keep going!";
+      const rewardMultiplier = calculateRewardMultiplier();
+      totalEarnings += parseInt(betAmountInput.value) * rewardMultiplier; // Calculate reward based on the multiplier
+      totalEarningsDisplay.innerText = totalEarnings; // Update total earnings
+    }
+  }
+
+  // Function to calculate the reward multiplier based on bombs selected
+  function calculateRewardMultiplier() {
+    switch (bombsCount) {
+      case 1:return 0.01;
+      case 2:return 0.05;
+      case 3:return 0.1;
+      case 4:return 0.5;
+      case 5:return 0.6;
+      case 6:return 0.8;
+      case 7:return 0.9;
+      case 8:return 1;
+      case 9:return 1.1;
+      case 10:return 1.2;
+      case 11:return 1.3;
+      default:return 1; // Default multiplier
+    }
+  }
+
+  // Start the game
+  startButton.addEventListener("click", () => {
+    bombsCount = parseInt(bombsCountSelect.value); // Get selected bombs
+    const betAmount = parseInt(betAmountInput.value);
+
+    if (points < betAmount) {
+      alert("You don't have enough points to place that bet!");
+      return;
+    }
+
+    // Set game state to started
+    gameStarted = true;
+    points -= betAmount; // Deduct bet amount from points
+    totalEarnings = betAmount; // Start earnings with risk amount
+    startButton.style.display = "none"; // Hide start button
+    depositButton.style.display = "block"; // Show deposit button
+    generateGrid(); // Generate the grid
+    message.innerText = ""; // Clear any messages
+    updatePointsDisplay(); // Update points display after placing a bet
+  });
+
+  // Handle deposit button click
+  depositButton.addEventListener("click", () => {
+    if (totalEarnings > 0) {
+      points += totalEarnings; // Deposit current earnings into points
+      message.innerText = `You have deposited ${totalEarnings} points!`;
+      totalEarnings = 0; // Reset total earnings after deposit
+      totalEarningsDisplay.innerText = totalEarnings; // Reset display
+      updatePointsDisplay(); // Update points display
+      depositButton.style.display = "none"; // Hide deposit button after deposit
+      startButton.style.display = "block"; // Show start button for next game
+    } else {
+      message.innerText = "You have no earnings to deposit!";
+    }
+  });
+
+  // Initialize the grid and points display on page load
+  updatePointsDisplay();
+});
+//# sourceURL=pen.js
+    </script>
+
+  
+
+
+
+</body></html>
