@@ -1,0 +1,206 @@
+<html lang="en" class=""><head>
+
+  <meta charset="UTF-8">
+  <title>CodePen Demo</title>
+
+  <meta name="robots" content="noindex">
+
+  <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+  <link rel="mask-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111">
+  <link rel="canonical" href="https://codepen.io/pen/">
+
+  
+  
+
+  <style id="INLINE_PEN_STYLESHEET_ID">
+    
+  </style>
+
+  
+<script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeConsoleRunner-6d8bf8b4b479137260842506acbb12717dace0823c023e08b96360e60b0840d9.js"></script>
+<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRefreshCSS-44fe83e49b63affec96918c9af88c0d80b209a862cf87ac46bc933074b8c557d.js"></script>
+<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRuntimeErrors-4f205f2c14e769b448bcf477de2938c681660d5038bc464e3700256713ebe261.js"></script>
+</head>
+
+<body>
+  
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Points Conversion Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .points-display {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .convert-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .convert-button:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #007bff;
+            background-color: #2a2a2a;
+            color: white;
+        }
+        .modal button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+        }
+        .modal button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+
+
+    <h1>JustErikDemon Games</h1>
+    <h2>Global Points Conversion</h2>
+
+    <div class="menu-container">
+        <!-- Display user's global points -->
+        <div class="points-display">
+            <strong>Your Global Points: <span id="globalPoints">220</span></strong>
+        </div>
+
+        <!-- Button to convert points -->
+        <button class="convert-button" id="convertPointsBtn">Convert Points</button>
+    </div>
+
+    <!-- Modal for Roblox user input and points amount -->
+    <div class="modal" id="conversionModal">
+        <h2>Convert Points</h2>
+        <label for="rblxUser">Roblox Username:</label>
+        <input type="text" id="rblxUser" placeholder="Enter Roblox Username">
+        
+        <label for="pointsAmount">Points to Convert:</label>
+        <input type="number" id="pointsAmount" placeholder="Enter Points Amount" min="1">
+
+        <button id="submitConversion">Submit</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const globalPoints = document.getElementById("globalPoints"); // Global points display
+            const convertPointsBtn = document.getElementById("convertPointsBtn"); // Button to open modal
+            const conversionModal = document.getElementById("conversionModal"); // Modal element
+            const submitConversion = document.getElementById("submitConversion"); // Submit button in modal
+            const rblxUserInput = document.getElementById("rblxUser"); // Roblox username input
+            const pointsAmountInput = document.getElementById("pointsAmount"); // Points amount input
+
+            // Points saved in localStorage (for simulation)
+            let points = parseInt(localStorage.getItem("globalPoints")) || 1000;
+            globalPoints.innerText = points;
+
+            // Show the modal when 'Convert Points' button is clicked
+            convertPointsBtn.addEventListener("click", () => {
+                conversionModal.style.display = "block";
+            });
+
+            // Send webhook when the form is submitted
+            submitConversion.addEventListener("click", () => {
+                const rblxUser = rblxUserInput.value.trim();
+                const pointsToConvert = parseInt(pointsAmountInput.value);
+
+                if (rblxUser === "" || isNaN(pointsToConvert) || pointsToConvert <= 0) {
+                    alert("Please enter a valid username and points amount.");
+                    return;
+                }
+
+                // Check if user has enough points
+                if (pointsToConvert > points) {
+                    alert("Not enough points to convert!");
+                    return;
+                }
+
+                // Subtract points from the global points
+                points -= pointsToConvert;
+                localStorage.setItem("globalPoints", points);
+                globalPoints.innerText = points;
+
+                // Webhook URL (replace with your actual webhook)
+                const webhookUrl = 'https://your-webhook-url-here.com';
+
+                // Prepare the webhook data
+                const webhookData = {
+                    content: `${rblxUser} redeemed ${pointsToConvert} points from JustErikDemon Games to JustErikDemon Rewards!`
+                };
+
+                // Send the webhook via POST request
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(webhookData),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Points converted successfully!");
+                    conversionModal.style.display = "none"; // Close the modal after success
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("There was an error converting the points.");
+                });
+            });
+        });
+    </script>
+
+
+
+
+  
+  
+
+
+</body></html>
