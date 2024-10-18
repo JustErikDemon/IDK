@@ -62,15 +62,22 @@
             // Retrieve current points from localStorage
             let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
 
-            // Update points in localStorage if check code is different
+            // Update points in localStorage if check code is valid and different
             if (checkCode && checkCode !== storedCheckCode) {
-                points += rewardPoints; // Add the reward points
-                localStorage.setItem("points", points); // Save updated points
-                localStorage.setItem("lastCheckCode", checkCode); // Update the last used check code
+                // Check if the reward points are valid and greater than zero
+                if (rewardPoints > 0) {
+                    points += rewardPoints; // Add the reward points
+                    localStorage.setItem("points", points); // Save updated points
+                    localStorage.setItem("lastCheckCode", checkCode); // Update the last used check code
 
-                // Update message
-                const messageElement = document.getElementById("message");
-                messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+                    // Update message
+                    const messageElement = document.getElementById("message");
+                    messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+                } else {
+                    // If reward points are invalid
+                    const messageElement = document.getElementById("message");
+                    messageElement.innerText = `Invalid reward points provided.`;
+                }
             } else if (checkCode && checkCode === storedCheckCode) {
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = `No new points added. Check code is the same.`;
@@ -93,5 +100,6 @@
 
 </body>
 </html>
+
 
 
