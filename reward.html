@@ -36,7 +36,7 @@
 <body>
 
     <div class="container">
-        <h1>Points Successfully Sent...</h1>
+        <h1>Points Successfully Sended...</h1>
         <p id="message">Checking points...</p>
     </div>
 
@@ -69,22 +69,22 @@
 
                 // Update message
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+                messageElement.innerText = Successfully added ${rewardPoints} points!;
             } else if (checkCode && !isValidCheckCode(checkCode)) {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = ``;
+                messageElement.innerText = `;
             } else if (checkCode && checkCode === storedCheckCode) {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = ``;
+                messageElement.innerText = `;
             } else {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = `You can close the page now.`;
+                messageElement.innerText = You Can Close The Page Now.;
             }
 
-            // Redirect to the specified URL after processing
-            const redirectUrl = "https://sites.google.com/view/justerikdemon-investment/f%C5%91oldal";
+            // Redirect to the original URL without the query parameters
+            const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
-                window.location.href = redirectUrl; // Redirect to the specified URL
+                window.location.href = originalUrl; // Redirect to the original URL
             }, 100); // Fast redirect after 100 milliseconds
         });
     </script>
