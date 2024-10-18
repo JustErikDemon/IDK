@@ -59,24 +59,42 @@
                 return requiredLetters.every(letter => code.includes(letter));
             }
 
-            // Function to update points globally via API call
-            async function updatePointsGlobally(rewardPoints, checkCode) {
+            // Function to retrieve current points from the global storage
+            async function getCurrentPoints(checkCode) {
+                try {
+                    const response = await fetch("https://your-api-endpoint.com/getPoints", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${checkCode}` // Example for authentication
+                        }
+                    });
+                    const data = await response.json();
+                    return data.points; // Return current points
+                } catch (error) {
+                    console.error("Error fetching current points:", error);
+                    return null;
+                }
+            }
+
+            // Function to update total points globally via API call
+            async function updateTotalPoints(checkCode, totalPoints) {
                 try {
                     const response = await fetch("https://your-api-endpoint.com/updatePoints", {
                         method: "POST",
                         headers: {
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
                             checkCode: checkCode,
-                            points: rewardPoints
+                            points: totalPoints
                         })
                     });
 
                     const data = await response.json();
                     return data; // Return response from the server
                 } catch (error) {
-                    console.error("Error updating points:", error);
+                    console.error("Error updating total points:", error);
                     return { success: false, message: "Failed to update points" };
                 }
             }
@@ -104,18 +122,31 @@
                 console.log("Check Code:", checkCode);
                 console.log("Stored Check Code (Global):", storedCheckCode);
 
-                // Update points globally if the check code is valid and different
+                // Validate and process the check code
                 if (checkCode && isValidCheckCode(checkCode) && checkCode !== storedCheckCode) {
-                    const updateResult = await updatePointsGlobally(rewardPoints, checkCode);
+                    // Get current points from global storage
+                    let currentPoints = await getCurrentPoints(checkCode);
+                    
+                    if (currentPoints !== null) {
+                        // Add the new reward points to the current total points
+                        const totalPoints = currentPoints + rewardPoints;
 
-                    // Update message based on the result from the API
-                    const messageElement = document.getElementById("message");
-                    if (updateResult.success) {
-                        messageElement.innerText = `Successfully added ${rewardPoints} points!`;
-                        console.log("Points updated globally:", updateResult.points);
+                        // Update total points globally
+                        const updateResult = await updateTotalPoints(checkCode, totalPoints);
+
+                        // Update message based on the result from the API
+                        const messageElement = document.getElementById("message");
+                        if (updateResult.success) {
+                            messageElement.innerText = `Successfully added ${rewardPoints} points! Total points: ${totalPoints}`;
+                            console.log("Points updated globally:", totalPoints);
+                        } else {
+                            messageElement.innerText = `Failed to update points: ${updateResult.message}`;
+                            console.log("Failed to update points");
+                        }
                     } else {
-                        messageElement.innerText = `Failed to update points: ${updateResult.message}`;
-                        console.log("Failed to update points");
+                        const messageElement = document.getElementById("message");
+                        messageElement.innerText = `Failed to retrieve current points. You can close the page now.`;
+                        console.log("Failed to retrieve current points");
                     }
                 } else if (checkCode && !isValidCheckCode(checkCode)) {
                     const messageElement = document.getElementById("message");
@@ -144,5 +175,6 @@
 
 </body>
 </html>
+
 
 
