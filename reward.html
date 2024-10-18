@@ -36,8 +36,8 @@
 <body>
 
     <div class="container">
-        <h1>Waiting For Reward...</h1>
-        <p id="message">Adding points...</p>
+        <h1>Processing Reward...</h1>
+        <p id="message">Checking points...</p>
     </div>
 
     <script>
@@ -50,17 +50,28 @@
 
             const params = getQueryParams();
             const rewardPoints = parseInt(params.get("reward")) || 0; // Get reward points from the URL
+            const checkCode = params.get("check"); // Get check code from the URL
+            const storedCheckCode = localStorage.getItem("lastCheckCode"); // Retrieve last check code from localStorage
 
-            // Update points in localStorage
-            let points = parseInt(localStorage.getItem("points")) || 0;
-            points += rewardPoints; // Add the reward points
-            localStorage.setItem("points", points); // Save updated points
+            // Update points in localStorage if check code is different
+            if (checkCode && checkCode !== storedCheckCode) {
+                let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
+                points += rewardPoints; // Add the reward points
+                localStorage.setItem("points", points); // Save updated points
+                localStorage.setItem("lastCheckCode", checkCode); // Update the last used check code
 
-            // Update message
-            const messageElement = document.getElementById("message");
-            messageElement.innerText = ;
+                // Update message
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+            } else if (checkCode && checkCode === storedCheckCode) {
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = `No new points added. Check code is the same.`;
+            } else {
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = `No valid check code provided.`;
+            }
 
-            // Redirect to the original URL without the ?reward parameter
+            // Redirect to the original URL without the query parameters
             const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
                 window.location.href = originalUrl; // Redirect to the original URL
