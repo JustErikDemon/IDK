@@ -1,135 +1,153 @@
-<html lang="en" class=""><head>
-
-  <meta charset="UTF-8">
-  <title>CodePen Demo</title>
-
-  <meta name="robots" content="noindex">
-
-  <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
-  <link rel="mask-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111">
-  <link rel="canonical" href="https://codepen.io/pen/">
-
-  
-  
-
-  <style id="INLINE_PEN_STYLESHEET_ID">
-    body {
-    font-family: Arial, sans-serif;
-    background-color: #007bff; /* Blue background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    color: #000000; /* Black text color */
-}
-
-.container {
-    text-align: center;
-    background-color: #ffffff; /* White background for the frame */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-h1 {
-    color: #000000; /* Black color for the title */
-}
-
-input {
-    padding: 10px;
-    font-size: 16px;
-    margin: 10px 0;
-}
-
-button {
-    margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    color: #ffffff; /* White text for buttons */
-}
-
-.red-button {
-    background-color: #ff3333; /* Red button */
-}
-
-.black-button {
-    background-color: #000000; /* Black button */
-}
-
-.points-display {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: white;
-}
-
-#result {
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
-    opacity: 0; /* Start hidden */
-    transition: opacity 0.5s ease; /* Smooth transition for opacity */
-}
-
-.hidden {
-    display: none;
-}
-
-/* Rolling animation */
-@keyframes roll {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-#dice {
-    margin-top: 20px;
-    font-size: 24px;
-    animation: roll 1s infinite;
-}
-
-  </style>
-
-  
-<script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
-<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeConsoleRunner-6d8bf8b4b479137260842506acbb12717dace0823c023e08b96360e60b0840d9.js"></script>
-<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRefreshCSS-44fe83e49b63affec96918c9af88c0d80b209a862cf87ac46bc933074b8c557d.js"></script>
-<script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRuntimeErrors-4f205f2c14e769b448bcf477de2938c681660d5038bc464e3700256713ebe261.js"></script>
-</head>
-
-<body>
-  
-
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dice Betting Game</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #007bff; /* Blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #000000; /* Black text color */
+        }
 
+        .container {
+            text-align: center;
+            background-color: #ffffff; /* White background for the frame */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #000000; /* Black color for the title */
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff; /* White text for buttons */
+        }
+
+        .red-button {
+            background-color: #ff3333; /* Red button */
+        }
+
+        .black-button {
+            background-color: #000000; /* Black button */
+        }
+
+        .points-display {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: white;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.5s ease; /* Smooth transition for opacity */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Rolling animation */
+        @keyframes roll {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        #dice {
+            margin-top: 20px;
+            font-size: 24px;
+            animation: roll 1s infinite;
+        }
+    </style>
+</head>
+<body>
 
     <div class="container">
         <h1>🟥 Bet A Color ⬛</h1>
-        <div id="points" class="points-display">Your Points: 521</div>
+        <div id="points" class="points-display">Your Points: 0</div>
         <input type="number" id="betAmount" placeholder="Enter your bet" min="1">
         <div>
-            <button class="red-button" id="redBetButton" onclick="placeBet('red')">Bet on Red</button>
-            <button class="black-button" id="blackBetButton" onclick="placeBet('black')">Bet on Black</button>
+            <button class="red-button" id="redBetButton">Bet on Red</button>
+            <button class="black-button" id="blackBetButton">Bet on Black</button>
         </div>
         <div id="result" class="" style="opacity: 1;">You lost!</div>
         <div id="dice" class="hidden">Rolling...</div>
     </div>
-    <script src="script.js"></script>
 
+    <script>
+        // Initialize points from localStorage
+        let points = parseInt(localStorage.getItem("points")) || 521; // Default to 521 if not set
+        document.getElementById("points").innerText = `Your Points: ${points}`;
 
+        // Function to update points display
+        function updatePointsDisplay() {
+            document.getElementById("points").innerText = `Your Points: ${points}`;
+        }
 
-  
-  <script src="https://cdpn.io/cpe/boomboom/pen.js?key=pen.js-7f5ca5df-e300-b2cc-1526-8372f8277d3f" crossorigin=""></script>
+        // Function to handle betting
+        function placeBet(color) {
+            const betAmount = parseInt(document.getElementById("betAmount").value);
 
+            if (isNaN(betAmount) || betAmount <= 0 || betAmount > points) {
+                alert("Please enter a valid bet amount.");
+                return;
+            }
 
-</body></html>
+            // Show the rolling animation
+            document.getElementById("dice").classList.remove("hidden");
+
+            // Simulate rolling
+            setTimeout(() => {
+                const winColor = Math.random() < 0.5 ? 'red' : 'black'; // Randomly choose win color
+                document.getElementById("dice").classList.add("hidden"); // Hide rolling text
+                document.getElementById("result").innerText = winColor === color ? "You won!" : "You lost!";
+                document.getElementById("result").style.opacity = 1; // Show result
+
+                // Update points based on win or lose
+                if (winColor === color) {
+                    points += betAmount; // Win: add bet amount
+                } else {
+                    points -= betAmount; // Lose: subtract bet amount
+                }
+
+                // Update localStorage
+                localStorage.setItem("points", points);
+                updatePointsDisplay();
+            }, 2000); // Simulate 2 seconds of rolling
+        }
+
+        // Attach event listeners to buttons
+        document.getElementById("redBetButton").addEventListener("click", () => placeBet('red'));
+        document.getElementById("blackBetButton").addEventListener("click", () => placeBet('black'));
+    </script>
+
+</body>
+</html>
