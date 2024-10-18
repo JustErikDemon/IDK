@@ -31,20 +31,13 @@
         p {
             margin-bottom: 10px;
         }
-
-        #pointsDisplay {
-            margin-top: 20px;
-            font-size: 24px;
-            color: #00ff00; /* Green color for points */
-        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Reward Processor</h1>
+        <h1>Processing Reward...</h1>
         <p id="message">Checking points...</p>
-        <p id="pointsDisplay"></p> <!-- Display current points here -->
     </div>
 
     <script>
@@ -60,20 +53,8 @@
             const checkCode = params.get("check"); // Get check code from the URL
             const storedCheckCode = localStorage.getItem("lastCheckCode"); // Retrieve last check code from localStorage
 
-            // Check if the check code contains the required letters
-            const requiredLetters = ['T', 'Z', 'H', 'J'];
-
-            function isValidCheckCode(code) {
-                return requiredLetters.every(letter => code.includes(letter));
-            }
-
-            // Debug: Log values to ensure we are getting the right values
-            console.log("Reward Points:", rewardPoints);
-            console.log("Check Code:", checkCode);
-            console.log("Stored Check Code:", storedCheckCode);
-
-            // Update points in localStorage if check code is valid and different
-            if (checkCode && isValidCheckCode(checkCode) && checkCode !== storedCheckCode) {
+            // Update points in localStorage if check code is different
+            if (checkCode && checkCode !== storedCheckCode) {
                 let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
                 points += rewardPoints; // Add the reward points
                 localStorage.setItem("points", points); // Save updated points
@@ -81,33 +62,24 @@
 
                 // Update message
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = "Points Successfully Deposited! You can close this page now.";
-
-                // Display updated points
-                const pointsDisplay = document.getElementById("pointsDisplay");
-                pointsDisplay.innerText = `Your current points: ${points}`;
-                console.log("Points updated:", points);
-            } else if (checkCode && !isValidCheckCode(checkCode)) {
-                const messageElement = document.getElementById("message");
-                messageElement.innerText = "Invalid check code. You can close this page now.";
+                messageElement.innerText = `Successfully added ${rewardPoints} points!`;
             } else if (checkCode && checkCode === storedCheckCode) {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = "Check code has already been used. You can close this page now.";
+                messageElement.innerText = `No new points added. Check code is the same.`;
             } else {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = "No valid check code provided. You can close this page now.";
+                messageElement.innerText = `No valid check code provided.`;
             }
 
-            // Redirect to the original URL without the query parameters after a brief delay
+            // Redirect to the original URL without the query parameters
             const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
                 window.location.href = originalUrl; // Redirect to the original URL
-            }, 3000); // Delay of 3 seconds for visibility
+            }, 100); // Fast redirect after 100 milliseconds
         });
     </script>
 
 </body>
 </html>
-
 
 
