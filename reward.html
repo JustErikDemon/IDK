@@ -28,29 +28,8 @@
             margin-bottom: 20px;
         }
 
-        .points-display {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
         p {
             margin-bottom: 10px;
-        }
-
-        button {
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-        }
-
-        button:disabled {
-            background-color: #cccccc; /* Gray color for disabled buttons */
-            cursor: not-allowed;
         }
     </style>
 </head>
@@ -58,71 +37,65 @@
 
     <div class="container">
         <h1>Reward Processor</h1>
-        <div class="points-display" id="points">Your Points: 0</div>
-        <input type="number" id="rewardInput" placeholder="Enter reward points" min="1">
-        <input type="text" id="checkCodeInput" placeholder="Enter check code">
-        <button id="processRewardButton">Process Reward</button>
         <p id="message">Checking points...</p>
     </div>
 
     <script>
-        // Initialize points from localStorage
-        let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if not set
-        document.getElementById("points").innerText = `Your Points: ${points}`;
-
-        // Function to update points display
-        function updatePointsDisplay() {
-            document.getElementById("points").innerText = `Your Points: ${points}`;
-        }
-
-        // Function to check if the check code is valid
-        const requiredLetters = ['T', 'Z', 'H', 'J'];
-        function isValidCheckCode(code) {
-            return requiredLetters.every(letter => code.includes(letter));
-        }
-
-        // Function to process reward points
-        function processReward() {
-            const rewardPoints = parseInt(document.getElementById("rewardInput").value);
-            const checkCode = document.getElementById("checkCodeInput").value;
-            const messageElement = document.getElementById("message");
-
-            // Validate reward points and check code
-            if (isNaN(rewardPoints) || rewardPoints <= 0) {
-                messageElement.innerText = "Please enter a valid reward points amount.";
-                return;
+        document.addEventListener("DOMContentLoaded", () => {
+            // Function to get query parameters
+            function getQueryParams() {
+                const params = new URLSearchParams(window.location.search);
+                return params;
             }
 
-            if (!isValidCheckCode(checkCode)) {
-                messageElement.innerText = "Invalid check code.";
-                return;
+            const params = getQueryParams();
+            const rewardPoints = parseInt(params.get("reward")) || 0; // Get reward points from the URL
+            const checkCode = params.get("check"); // Get check code from the URL
+            const storedCheckCode = localStorage.getItem("lastCheckCode"); // Retrieve last check code from localStorage
+
+            // Check if the check code contains the required letters
+            const requiredLetters = ['T', 'Z', 'H', 'J'];
+
+            function isValidCheckCode(code) {
+                return requiredLetters.every(letter => code.includes(letter));
             }
 
-            // Check if the check code was already used
-            const storedCheckCode = localStorage.getItem("lastCheckCode");
-            if (checkCode === storedCheckCode) {
-                messageElement.innerText = "Check code has already been used.";
-                return;
+            // Debug: Log values to ensure we are getting the right values
+            console.log("Reward Points:", rewardPoints);
+            console.log("Check Code:", checkCode);
+            console.log("Stored Check Code:", storedCheckCode);
+
+            // Update points in localStorage if check code is valid and different
+            if (checkCode && isValidCheckCode(checkCode) && checkCode !== storedCheckCode) {
+                let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
+                points += rewardPoints; // Add the reward points
+                localStorage.setItem("points", points); // Save updated points
+                localStorage.setItem("lastCheckCode", checkCode); // Update the last used check code
+
+                // Update message
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = "Points Successfully Deposited! You can close this page now.";
+                console.log("Points updated:", points);
+            } else if (checkCode && !isValidCheckCode(checkCode)) {
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = "Invalid check code. You can close this page now.";
+                console.log("Invalid check code");
+            } else if (checkCode && checkCode === storedCheckCode) {
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = "Check code has already been used. You can close this page now.";
+                console.log("Reused check code");
+            } else {
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = "No valid check code provided. You can close this page now.";
+                console.log("No valid check code");
             }
 
-            // Update points
-            points += rewardPoints;
-            localStorage.setItem("points", points); // Update localStorage
-            localStorage.setItem("lastCheckCode", checkCode); // Save the used check code
-            updatePointsDisplay(); // Refresh the display
-
-            // Update message and redirect
-            messageElement.innerText = "Points Successfully Deposited!";
+            // Redirect to the original URL without the query parameters after a brief delay
+            const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
-                messageElement.innerText += "\nYou can close this page now!";
-                // Redirect to the original URL without the query parameters
-                const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
                 window.location.href = originalUrl; // Redirect to the original URL
-            }, 100); // Quick delay to make the message visible
-        }
-
-        // Attach event listener to the process button
-        document.getElementById("processRewardButton").addEventListener("click", processReward);
+            }, 1000); // Delay of 1 second
+        });
     </script>
 
 </body>
