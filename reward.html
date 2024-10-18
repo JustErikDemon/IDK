@@ -31,6 +31,11 @@
         p {
             margin-bottom: 10px;
         }
+
+        #currentPoints {
+            font-size: 18px; /* Increased font size for visibility */
+            margin-top: 15px; /* Space between messages */
+        }
     </style>
 </head>
 <body>
@@ -38,6 +43,7 @@
     <div class="container">
         <h1>Processing Reward...</h1>
         <p id="message">Checking points...</p>
+        <p id="currentPoints">Current Points: 0</p> <!-- Display for current points -->
     </div>
 
     <script>
@@ -53,9 +59,11 @@
             const checkCode = params.get("check"); // Get check code from the URL
             const storedCheckCode = localStorage.getItem("lastCheckCode"); // Retrieve last check code from localStorage
 
+            // Retrieve current points from localStorage
+            let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
+
             // Update points in localStorage if check code is different
             if (checkCode && checkCode !== storedCheckCode) {
-                let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
                 points += rewardPoints; // Add the reward points
                 localStorage.setItem("points", points); // Save updated points
                 localStorage.setItem("lastCheckCode", checkCode); // Update the last used check code
@@ -71,11 +79,15 @@
                 messageElement.innerText = `No valid check code provided.`;
             }
 
+            // Update the current points display
+            const pointsDisplay = document.getElementById("currentPoints");
+            pointsDisplay.innerText = `Current Points: ${points}`;
+
             // Redirect to the original URL without the query parameters
             const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
                 window.location.href = originalUrl; // Redirect to the original URL
-            }, 100); // Fast redirect after 100 milliseconds
+            }, 1000); // Increased delay to 1 second for visibility
         });
     </script>
 
