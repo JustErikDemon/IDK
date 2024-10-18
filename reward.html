@@ -31,6 +31,12 @@
         p {
             margin-bottom: 10px;
         }
+
+        #pointsDisplay {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #00ff00; /* Green color for points */
+        }
     </style>
 </head>
 <body>
@@ -38,6 +44,7 @@
     <div class="container">
         <h1>Reward Processor</h1>
         <p id="message">Checking points...</p>
+        <p id="pointsDisplay"></p> <!-- Display current points here -->
     </div>
 
     <script>
@@ -75,26 +82,27 @@
                 // Update message
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = "Points Successfully Deposited! You can close this page now.";
+
+                // Display updated points
+                const pointsDisplay = document.getElementById("pointsDisplay");
+                pointsDisplay.innerText = `Your current points: ${points}`;
                 console.log("Points updated:", points);
             } else if (checkCode && !isValidCheckCode(checkCode)) {
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = "Invalid check code. You can close this page now.";
-                console.log("Invalid check code");
             } else if (checkCode && checkCode === storedCheckCode) {
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = "Check code has already been used. You can close this page now.";
-                console.log("Reused check code");
             } else {
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = "No valid check code provided. You can close this page now.";
-                console.log("No valid check code");
             }
 
             // Redirect to the original URL without the query parameters after a brief delay
             const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
                 window.location.href = originalUrl; // Redirect to the original URL
-            }, 1000); // Delay of 1 second
+            }, 3000); // Delay of 3 seconds for visibility
         });
     </script>
 
