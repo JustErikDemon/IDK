@@ -90,11 +90,11 @@
             const pointsDisplay = document.getElementById("currentPoints");
             pointsDisplay.innerText = `Current Points: ${points}`;
 
-            // Redirect to the original URL without the query parameters
+            // Redirect to the original URL without the query parameters only after processing
             const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
                 window.location.href = originalUrl; // Redirect to the original URL
-            }, 1000); // Increased delay to 1 second for visibility
+            }, 3000); // Wait 3 seconds before redirecting to allow users to see the message
         });
     </script>
 
