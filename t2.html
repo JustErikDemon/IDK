@@ -104,7 +104,7 @@
 
     <script>
         // Initialize points from localStorage
-        let points = parseInt(localStorage.getItem("points")) || 521; // Default to 521 if not set
+        let points = parseInt(localStorage.getItem("points")) || 0; // Default to 521 if not set
         document.getElementById("points").innerText = `Your Points: ${points}`;
 
         // Function to update points display
