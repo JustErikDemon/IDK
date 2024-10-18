@@ -60,6 +60,11 @@
                 return requiredLetters.every(letter => code.includes(letter));
             }
 
+            // Debug: Log values to ensure we are getting the right values
+            console.log("Reward Points:", rewardPoints);
+            console.log("Check Code:", checkCode);
+            console.log("Stored Check Code:", storedCheckCode);
+
             // Update points in localStorage if check code is valid and different
             if (checkCode && isValidCheckCode(checkCode) && checkCode !== storedCheckCode) {
                 let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
@@ -70,22 +75,29 @@
                 // Update message
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+                console.log("Points updated:", points);
             } else if (checkCode && !isValidCheckCode(checkCode)) {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = `you can close the page now`;
+                messageElement.innerText = `Invalid check code. You can close the page now.`;
+                console.log("Invalid check code");
             } else if (checkCode && checkCode === storedCheckCode) {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = `you can close the page now.`;
+                messageElement.innerText = `Check code reused. You can close the page now.`;
+                console.log("Reused check code");
             } else {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = `you can close the page now.`;
+                messageElement.innerText = `No valid check code provided. You can close the page now.`;
+                console.log("No valid check code");
             }
 
-            // Redirect to the original URL without the query parameters
+            // Debug: Log current points in localStorage
+            console.log("Current points in localStorage:", localStorage.getItem("points"));
+
+            // Redirect to the original URL without the query parameters after a delay
             const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
             setTimeout(() => {
                 window.location.href = originalUrl; // Redirect to the original URL
-            }, 100); // Fast redirect after 100 milliseconds
+            }, 1000); // Increased delay to 1 second for debugging
         });
     </script>
 
