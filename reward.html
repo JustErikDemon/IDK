@@ -53,8 +53,15 @@
             const checkCode = params.get("check"); // Get check code from the URL
             const storedCheckCode = localStorage.getItem("lastCheckCode"); // Retrieve last check code from localStorage
 
-            // Update points in localStorage if check code is different
-            if (checkCode && checkCode !== storedCheckCode) {
+            // Check if the check code contains the required letters
+            const requiredLetters = ['T', 'Z', 'H', 'J'];
+
+            function isValidCheckCode(code) {
+                return requiredLetters.every(letter => code.includes(letter));
+            }
+
+            // Update points in localStorage if check code is valid and different
+            if (checkCode && isValidCheckCode(checkCode) && checkCode !== storedCheckCode) {
                 let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if no points exist
                 points += rewardPoints; // Add the reward points
                 localStorage.setItem("points", points); // Save updated points
@@ -63,6 +70,9 @@
                 // Update message
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+            } else if (checkCode && !isValidCheckCode(checkCode)) {
+                const messageElement = document.getElementById("message");
+                messageElement.innerText = `Invalid check code. Must contain T, Z, H, J.`;
             } else if (checkCode && checkCode === storedCheckCode) {
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = `No new points added. Check code is the same.`;
@@ -81,4 +91,5 @@
 
 </body>
 </html>
+
 
