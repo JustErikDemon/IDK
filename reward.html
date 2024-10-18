@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward Processor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Processing Reward...</h1>
+        <p id="message">Adding points...</p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Function to get query parameters
+            function getQueryParams() {
+                const params = new URLSearchParams(window.location.search);
+                return params;
+            }
+
+            const params = getQueryParams();
+            const rewardPoints = parseInt(params.get("reward")) || 0; // Get reward points from the URL
+
+            // Update points in localStorage
+            let points = parseInt(localStorage.getItem("points")) || 0;
+            points += rewardPoints; // Add the reward points
+            localStorage.setItem("points", points); // Save updated points
+
+            // Update message
+            const messageElement = document.getElementById("message");
+            messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+
+            // Redirect to the original URL without the ?reward parameter
+            const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
+            setTimeout(() => {
+                window.location.href = originalUrl; // Redirect to the original URL
+            }, 100); // Adjust the delay to 100 milliseconds for a fast redirect
+        });
+    </script>
+
+</body>
+</html>
