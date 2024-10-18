@@ -104,7 +104,7 @@
 
     <script>
         // Initialize points from localStorage
-        let points = parseInt(localStorage.getItem("points")) || 0; // Default to 521 if not set
+        let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if not set
         document.getElementById("points").innerText = `Your Points: ${points}`;
 
         // Function to update points display
@@ -116,9 +116,14 @@
         function placeBet(color) {
             const betAmount = parseInt(document.getElementById("betAmount").value);
 
+            // Validate bet amount
             if (isNaN(betAmount) || betAmount <= 0 || betAmount > points) {
                 alert("Please enter a valid bet amount.");
                 return;
+            }
+            if (betAmount > 30) {
+                alert("The maximum bet amount is 30.");
+                return; // Early exit if bet amount is too high
             }
 
             // Show the rolling animation
@@ -151,3 +156,4 @@
 
 </body>
 </html>
+
