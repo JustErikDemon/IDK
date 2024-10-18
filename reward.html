@@ -80,7 +80,7 @@
                 }
             } else if (checkCode && checkCode === storedCheckCode) {
                 const messageElement = document.getElementById("message");
-                messageElement.innerText = `No new points added. Check code is the same.`;
+                messageElement.innerText = `No new points added. This check code has already been used.`;
             } else {
                 const messageElement = document.getElementById("message");
                 messageElement.innerText = `No valid check code provided.`;
