@@ -98,12 +98,27 @@
                 return;
             }
 
+            // Check if the check code was already used
+            const storedCheckCode = localStorage.getItem("lastCheckCode");
+            if (checkCode === storedCheckCode) {
+                messageElement.innerText = "Check code has already been used.";
+                return;
+            }
+
             // Update points
             points += rewardPoints;
             localStorage.setItem("points", points); // Update localStorage
+            localStorage.setItem("lastCheckCode", checkCode); // Save the used check code
             updatePointsDisplay(); // Refresh the display
 
-            messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+            // Update message and redirect
+            messageElement.innerText = "Points Successfully Deposited!";
+            setTimeout(() => {
+                messageElement.innerText += "\nYou can close this page now!";
+                // Redirect to the original URL without the query parameters
+                const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
+                window.location.href = originalUrl; // Redirect to the original URL
+            }, 100); // Quick delay to make the message visible
         }
 
         // Attach event listener to the process button
