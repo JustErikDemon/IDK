@@ -28,149 +28,86 @@
             margin-bottom: 20px;
         }
 
+        .points-display {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
         p {
             margin-bottom: 10px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:disabled {
+            background-color: #cccccc; /* Gray color for disabled buttons */
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1> Points Successfully Deposited</h1>
+        <h1>Reward Processor</h1>
+        <div class="points-display" id="points">Your Points: 0</div>
+        <input type="number" id="rewardInput" placeholder="Enter reward points" min="1">
+        <input type="text" id="checkCodeInput" placeholder="Enter check code">
+        <button id="processRewardButton">Process Reward</button>
         <p id="message">Checking points...</p>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Function to get query parameters
-            function getQueryParams() {
-                const params = new URLSearchParams(window.location.search);
-                return params;
+        // Initialize points from localStorage
+        let points = parseInt(localStorage.getItem("points")) || 0; // Default to 0 if not set
+        document.getElementById("points").innerText = `Your Points: ${points}`;
+
+        // Function to update points display
+        function updatePointsDisplay() {
+            document.getElementById("points").innerText = `Your Points: ${points}`;
+        }
+
+        // Function to check if the check code is valid
+        const requiredLetters = ['T', 'Z', 'H', 'J'];
+        function isValidCheckCode(code) {
+            return requiredLetters.every(letter => code.includes(letter));
+        }
+
+        // Function to process reward points
+        function processReward() {
+            const rewardPoints = parseInt(document.getElementById("rewardInput").value);
+            const checkCode = document.getElementById("checkCodeInput").value;
+            const messageElement = document.getElementById("message");
+
+            // Validate reward points and check code
+            if (isNaN(rewardPoints) || rewardPoints <= 0) {
+                messageElement.innerText = "Please enter a valid reward points amount.";
+                return;
             }
 
-            const params = getQueryParams();
-            const rewardPoints = parseInt(params.get("reward")) || 0; // Get reward points from the URL
-            const checkCode = params.get("check"); // Get check code from the URL
-
-            // Check if the check code contains the required letters
-            const requiredLetters = ['T', 'Z', 'H', 'J'];
-
-            function isValidCheckCode(code) {
-                return requiredLetters.every(letter => code.includes(letter));
+            if (!isValidCheckCode(checkCode)) {
+                messageElement.innerText = "Invalid check code.";
+                return;
             }
 
-            // Function to retrieve current points from the global storage
-            async function getCurrentPoints(checkCode) {
-                try {
-                    const response = await fetch("https://your-api-endpoint.com/getPoints", {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${checkCode}` // Example for authentication
-                        }
-                    });
-                    const data = await response.json();
-                    return data.points; // Return current points
-                } catch (error) {
-                    console.error("Error fetching current points:", error);
-                    return null;
-                }
-            }
+            // Update points
+            points += rewardPoints;
+            localStorage.setItem("points", points); // Update localStorage
+            updatePointsDisplay(); // Refresh the display
 
-            // Function to update total points globally via API call
-            async function updateTotalPoints(checkCode, totalPoints) {
-                try {
-                    const response = await fetch("https://your-api-endpoint.com/updatePoints", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            checkCode: checkCode,
-                            points: totalPoints
-                        })
-                    });
+            messageElement.innerText = `Successfully added ${rewardPoints} points!`;
+        }
 
-                    const data = await response.json();
-                    return data; // Return response from the server
-                } catch (error) {
-                    console.error("Error updating total points:", error);
-                    return { success: false, message: "Failed to update points" };
-                }
-            }
-
-            // Function to check the last used check code globally
-            async function getLastCheckCode() {
-                try {
-                    const response = await fetch("https://your-api-endpoint.com/getLastCheckCode", {
-                        method: "GET"
-                    });
-                    const data = await response.json();
-                    return data.lastCheckCode; // Retrieve last check code from global system
-                } catch (error) {
-                    console.error("Error fetching last check code:", error);
-                    return null;
-                }
-            }
-
-            async function processPoints() {
-                // Fetch the last check code from the global system
-                const storedCheckCode = await getLastCheckCode();
-
-                // Debug: Log values to ensure we are getting the right values
-                console.log("Reward Points:", rewardPoints);
-                console.log("Check Code:", checkCode);
-                console.log("Stored Check Code (Global):", storedCheckCode);
-
-                // Validate and process the check code
-                if (checkCode && isValidCheckCode(checkCode) && checkCode !== storedCheckCode) {
-                    // Get current points from global storage
-                    let currentPoints = await getCurrentPoints(checkCode);
-                    
-                    if (currentPoints !== null) {
-                        // Add the new reward points to the current total points
-                        const totalPoints = currentPoints + rewardPoints;
-
-                        // Update total points globally
-                        const updateResult = await updateTotalPoints(checkCode, totalPoints);
-
-                        // Update message based on the result from the API
-                        const messageElement = document.getElementById("message");
-                        if (updateResult.success) {
-                            messageElement.innerText = `Successfully added ${rewardPoints} points! Total points: ${totalPoints}`;
-                            console.log("Points updated globally:", totalPoints);
-                        } else {
-                            messageElement.innerText = `Failed to update points: ${updateResult.message}`;
-                            console.log("Failed to update points");
-                        }
-                    } else {
-                        const messageElement = document.getElementById("message");
-                        messageElement.innerText = `Failed to retrieve current points. You can close the page now.`;
-                        console.log("Failed to retrieve current points");
-                    }
-                } else if (checkCode && !isValidCheckCode(checkCode)) {
-                    const messageElement = document.getElementById("message");
-                    messageElement.innerText = `Invalid check code. You can close the page now.`;
-                    console.log("Invalid check code");
-                } else if (checkCode && checkCode === storedCheckCode) {
-                    const messageElement = document.getElementById("message");
-                    messageElement.innerText = `Check code reused. You can close the page now.`;
-                    console.log("Reused check code");
-                } else {
-                    const messageElement = document.getElementById("message");
-                    messageElement.innerText = `No valid check code provided. You can close the page now.`;
-                    console.log("No valid check code");
-                }
-            }
-
-            processPoints(); // Call the async function to process points
-
-            // Redirect to the original URL without the query parameters after a delay
-            const originalUrl = window.location.href.split("?")[0]; // Remove everything after the ?
-            setTimeout(() => {
-                window.location.href = originalUrl; // Redirect to the original URL
-            }, 1000); // Increased delay to 1 second for debugging
-        });
+        // Attach event listener to the process button
+        document.getElementById("processRewardButton").addEventListener("click", processReward);
     </script>
 
 </body>
