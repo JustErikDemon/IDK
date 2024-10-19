@@ -33,11 +33,14 @@
         .hidden {
             display: none;
         }
+        .disabled {
+            pointer-events: none; /* Disable all user interactions */
+        }
     </style>
 </head>
-<body>
+<body class="disabled"> <!-- Disable interaction while processing -->
     <div class="container">
-        <h1 id="message">Invaild Request Or Request Already Completed...</h1>
+        <h1 id="message">Processing your reward...</h1>
         <p id="subMessage" class="hidden">You can close this page now.</p>
     </div>
 
@@ -48,17 +51,20 @@
             return urlParams.get(name);
         }
 
-        // Function to remove the ?reward and ?check parameters from the URL
+        // Function to instantly remove the ?reward and ?check parameters from the URL
         function removeQueryParams() {
-            const url = window.location.href.split('?')[0]; // Remove parameters from URL
-            window.history.replaceState(null, null, url); // Replace the state without params
+            const url = window.location.href.split('?')[0];
+            window.history.replaceState(null, null, url); // Instantly replace the URL without parameters
         }
 
-        // Main function to process reward
+        // Main function to process the reward
         function processReward() {
-            let points = parseInt(localStorage.getItem("points")) || 100; // Load or initialize points
+            let points = parseInt(localStorage.getItem("points")) || 0; // Load or initialize points
             const reward = parseInt(getURLParameter("reward")); // Get reward amount from URL
             const check = getURLParameter("check"); // Get check value from URL
+
+            // Instantly remove the query params from the URL so the user doesn't see them
+            removeQueryParams();
 
             if (!isNaN(reward) && check) {
                 const storedCheck = localStorage.getItem("check_" + check); // Check if the same 'check' was used
@@ -73,21 +79,28 @@
                     document.getElementById("message").innerText = `Points Successfully Deposited: ${reward}`;
                     document.getElementById("subMessage").classList.remove("hidden");
 
-                    // Remove ?reward and ?check from the URL after successful deposit
-                    removeQueryParams();
+                } else {
+                    // If the check value was already used
+                    document.getElementById("message").innerText = "This Request Already Completed.";
+                    document.getElementById("subMessage").classList.remove("hidden");
                 }
-            } 
-            // No matter what, refresh the page every 1ms
-            setTimeout(() => {
-                window.location.href = window.location.href.split('?')[0]; // Reload the page without parameters
-            }, 1);
+            } else {
+                // If there is no valid reward or check
+                document.getElementById("message").innerText = "Invalid Request.";
+                document.getElementById("subMessage").classList.remove("hidden");
+            }
         }
 
-        // Set interval to refresh the page every 1ms
+        // Continuously refresh the page every 1ms
         setInterval(() => {
-            processReward(); // Process the reward if query parameters exist
+            processReward(); // Process the reward if the parameters exist, else continue refreshing
+            window.location.href = window.location.href.split('?')[0]; // Reload without parameters
         }, 1); // Refresh every 1ms
+
+        // Call the function to process the reward on page load
+        processReward();
     </script>
 </body>
 </html>
+
 
