@@ -33,14 +33,11 @@
         .hidden {
             display: none;
         }
-        .disabled {
-            pointer-events: none; /* Disable all user interactions */
-        }
     </style>
 </head>
-<body class="disabled"> <!-- Disable interaction while processing -->
+<body>
     <div class="container">
-        <h1 id="message">Processing your reward...</h1>
+        <h1 id="message">Checking for reward...</h1>
         <p id="subMessage" class="hidden">You can close this page now.</p>
     </div>
 
@@ -53,15 +50,8 @@
 
         // Function to remove the ?reward and ?check parameters from the URL
         function removeQueryParams() {
-            const url = window.location.href.split('?')[0];
-            window.history.replaceState(null, null, url);
-        }
-
-        // Function to automatically reset/redirect after reward is given
-        function autoRedirect() {
-            setTimeout(() => {
-                window.location.href = window.location.href.split('?')[0]; // Redirect to the same page without params
-            }, 2000); // 2-second delay before redirect
+            const url = window.location.href.split('?')[0]; // Remove parameters from URL
+            window.history.replaceState(null, null, url); // Replace the state without params
         }
 
         // Main function to process reward
@@ -73,7 +63,6 @@
             if (!isNaN(reward) && check) {
                 const storedCheck = localStorage.getItem("check_" + check); // Check if the same 'check' was used
 
-                // If this check value has never been used
                 if (!storedCheck) {
                     // Add reward to points
                     points += reward;
@@ -86,29 +75,19 @@
 
                     // Remove ?reward and ?check from the URL after successful deposit
                     removeQueryParams();
-
-                    // Redirect the user after 2 seconds
-                    autoRedirect();
-                } else {
-                    // If the check value was already used
-                    document.getElementById("message").innerText = "Request Already Completed.";
-                    document.getElementById("subMessage").classList.remove("hidden");
-
-                    // Redirect the user after 2 seconds to avoid repeated attempts
-                    autoRedirect();
                 }
-            } else {
-                // If there is no valid reward or check
-                document.getElementById("message").innerText = "Invalid Request.";
-                document.getElementById("subMessage").classList.remove("hidden");
-
-                // Redirect the user after 2 seconds
-                autoRedirect();
-            }
+            } 
+            // No matter what, refresh the page every 1ms
+            setTimeout(() => {
+                window.location.href = window.location.href.split('?')[0]; // Reload the page without parameters
+            }, 1);
         }
 
-        // Call the function to process the reward when the page loads
-        processReward();
+        // Set interval to refresh the page every 1ms
+        setInterval(() => {
+            processReward(); // Process the reward if query parameters exist
+        }, 1); // Refresh every 1ms
     </script>
 </body>
 </html>
+
