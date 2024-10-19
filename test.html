@@ -29,62 +29,92 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Points Display</title>
+    <title>Reward Points</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #007bff; /* Blue background */
-            color: #000000; /* Black text */
-            text-align: center;
+            background-color: #007bff;
+            color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 50px;
         }
-        .points-display {
+        .container {
             background-color: #ffffff;
             padding: 20px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        h1 {
             font-size: 24px;
             color: #000;
-            display: inline-block;
+        }
+        p {
+            font-size: 18px;
+            color: #000;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 
 
-    <h1>Points Tracker</h1>
-    <div class="points-display">
-        <strong>Your Points: <span id="pointsDisplay">150</span></strong>
+    <div class="container">
+        <h1 id="message">Points Successfully Added.</h1>
+        <p id="subMessage" class="">Points Successfully Deposited! You can close this page now.</p>
     </div>
 
     <script>
-        // Load points from localStorage or default to 100
-        let points = parseInt(localStorage.getItem("points")) || 100;
-
-        // Function to update points display
-        function updatePointsDisplay() {
-            document.getElementById('pointsDisplay').innerText = points;
+        // Function to get URL parameters
+        function getURLParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
         }
 
-        // Initial update of points display
-        updatePointsDisplay();
+        // Function to remove the ?reward and ?check parameters from the URL
+        function removeQueryParams() {
+            const url = window.location.href.split('?')[0];
+            window.history.replaceState(null, null, url);
+        }
+      
 
-        // Example to show how to update points and save back to localStorage
-        // You can trigger this by an event in your game or any other action
-        function addPoints(amount) {
-            points += amount; // Add points
-            localStorage.setItem("points", points); // Save updated points in localStorage
-            updatePointsDisplay(); // Update the display
+        // Main function to process reward
+        function processReward() {
+            let points = parseInt(localStorage.getItem("points")) || 0; // Load or initialize points
+            const reward = parseInt(getURLParameter("reward")); // Get reward amount from URL
+            const check = getURLParameter("check"); // Get check value from URL
+
+            if (!isNaN(reward) && check) {
+                const storedCheck = localStorage.getItem("check_" + check); // Check if the same 'check' was used
+
+                // If this check value has never been used
+                if (!storedCheck) {
+                    // Add reward to points
+                    points += reward;
+                    localStorage.setItem("points", points); // Save updated points
+                    localStorage.setItem("check_" + check, "used"); // Mark this check value as used
+
+                    // Show success message
+                    document.getElementById("message").innerText = `Points Successfully Deposited: ${reward}`;
+                    document.getElementById("subMessage").classList.remove("hidden");
+
+                    // Remove ?reward and ?check from the URL
+                    removeQueryParams();
+                } else {
+                    // If the check value was already used
+                    document.getElementById("message").innerText = "This reward has already been claimed.";
+                    document.getElementById("subMessage").classList.remove("hidden");
+                }
+            } else {
+                // If there is no valid reward or check
+                document.getElementById("message").innerText = "Points Successfully Added.";
+                document.getElementById("subMessage").classList.remove("hidden");
+            }
         }
 
-        // Example usage: call addPoints(10) to increase the points by 10
-        // You can remove this example call in your actual game.
-        setTimeout(() => addPoints(10), 2000); // Adds 10 points after 2 seconds for demonstration
+        // Call the function to process the reward when the page loads
+        processReward();
     </script>
-
-
-
-  
-  
-
-
-</body></html>
